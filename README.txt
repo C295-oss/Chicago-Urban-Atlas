@@ -1,6 +1,5 @@
 
 SETUP:
-    type 'cd wildHacks'
     - If you are working with frontend, type 'cd client'
         type 'npm install'
         type 'npm run dev'
