@@ -317,7 +317,7 @@ function App() {
     <>
       <div className={`sidebar ${isSideBarOpen ? 'open' : ''}`}>
         
-        <p><b>Display Options</b></p>
+        <h2><b>Display Options</b></h2>
         <div id="menu"></div>
         
         <div>
