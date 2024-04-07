@@ -274,7 +274,7 @@ function App() {
         const link = document.createElement('a');
         link.id = id;
         link.href = '#';
-        link.textContent = id.split('-').join(' ');
+        link.textContent = id;
         link.className = 'active';
     
         // Show or hide layer when the toggle is clicked.
@@ -311,8 +311,27 @@ function App() {
   return (
     <>
       <div className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
+        
+        <p><b>Display Options</b></p>
         <div id="menu"></div>
         
+        <div>
+
+          <br/>
+          <br/>
+
+          <p><b>Station Filters</b></p>
+
+          <label>
+            <input type="checkbox" />
+            ADA Accessible
+          </label>
+          <label>
+            <input type="checkbox" />
+            Park and Ride
+          </label>
+        </div>
+      
       </div>
 
       <button className="openbtn" onClick={toggleSidebar}>☰ Toggle Sidebar</button>
