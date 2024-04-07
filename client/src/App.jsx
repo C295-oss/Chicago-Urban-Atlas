@@ -1,7 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import './App.css';
-// import stationData from './CTA_RailStations.geojson';
 
 mapboxgl.accessToken = "pk.eyJ1IjoiY3NreW9zIiwiYSI6ImNscmdwb2R5bjBmajUyam15OTF2N3hkbWoifQ.RTlw7rbFQy8YiAxHRIDiHQ";
 
@@ -44,51 +43,48 @@ function App() {
         // vector tileset contains building height data
         // from OpenStreetMap.
         map.current.addLayer(
-            {
-                'id': '3D-buildings',
-                'source': 'composite',
-                'source-layer': 'building',
-                'filter': ['==', 'extrude', 'true'],
-                'type': 'fill-extrusion',
-                'minzoom': 15,
-                'layout': {
-                  // Make the layer visible by default.
-                  'visibility': 'none'
-                },
-                'paint': {
-                    'fill-extrusion-color': '#aaa',
-
-                    // Use an 'interpolate' expression to
-                    // add a smooth transition effect to
-                    // the buildings as the user zooms in.
-                    'fill-extrusion-height': [
-                        'interpolate',
-                        ['linear'],
-                        ['zoom'],
-                        15,
-                        0,
-                        15.05,
-                        ['get', 'height']
-                    ],
-                    'fill-extrusion-base': [
-                        'interpolate',
-                        ['linear'],
-                        ['zoom'],
-                        15,
-                        0,
-                        15.05,
-                        ['get', 'min_height']
-                    ],
-                    'fill-extrusion-opacity': 0.6
-                }
+          {
+            'id': '3D-buildings',
+            'source': 'composite',
+            'source-layer': 'building',
+            'filter': ['==', 'extrude', 'true'],
+            'type': 'fill-extrusion',
+            'minzoom': 15,
+            'layout': {
+              // Make the layer visible by default.
+              'visibility': 'none'
             },
-            labelLayerId
+            'paint': {
+              'fill-extrusion-color': '#aaa',
+              // Use an 'interpolate' expression to
+              // add a smooth transition effect to
+              // the buildings as the user zooms in.
+              'fill-extrusion-height': [
+                  'interpolate',
+                  ['linear'],
+                  ['zoom'],
+                  15,
+                  0,
+                  15.05,
+                  ['get', 'height']
+              ],
+              'fill-extrusion-base': [
+                  'interpolate',
+                  ['linear'],
+                  ['zoom'],
+                  15,
+                  0,
+                  15.05,
+                  ['get', 'min_height']
+              ],
+              'fill-extrusion-opacity': 0.6
+            }
+          },
+          labelLayerId
         );
       });
 
-
       map.current.on('load', () => {
-
           map.current.addSource('density', {
             type: 'geojson',
             data: './src/assets/points_full_100.geojson'
@@ -305,7 +301,6 @@ function App() {
         layers.appendChild(link);
       }
     });
-    
   });
 
   return (
