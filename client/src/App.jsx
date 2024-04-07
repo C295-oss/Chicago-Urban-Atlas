@@ -117,9 +117,9 @@ function App() {
                 ['linear'],
                 ['zoom'],
                 0,
-                0.1, // Lower intensity at lower zoom levels
+                0.01, // Lower intensity at lower zoom levels
                 9,
-                0.3    // Full intensity at higher zoom levels
+                0.2    // Full intensity at higher zoom levels
               ],
               // Color ramp for heatmap.  Domain is 0 (low) to 1 (high).
               // Begin color ramp at 0-stop with a 0-transparency color
@@ -134,11 +134,11 @@ function App() {
                 'rgb(255,243,59)',
                 0.2,
                 'rgb(253,199,12)',
-                0.4,
+                0.3,
                 'rgb(243,144,63)',
-                0.6,
+                0.4,
                 'rgb(237,104,60)',
-                0.8,
+                0.5,
                 'rgb(233,62,58)'
               ],
               // Adjust the heatmap radius by zoom level
@@ -147,10 +147,10 @@ function App() {
                 ['linear'],
                 ['zoom'],
                 // Define zoom levels and corresponding heatmap radius values
-                0,   // Zoom level 0
-                0.001,   // Heatmap radius at zoom level 0
-                0.2,   // Zoom level 9
-                50    // Heatmap radius at zoom level 9 (make it larger if needed)
+                0,      // Zoom level 0
+                0.1,    // Heatmap radius at zoom level 0
+                0.5,    // Zoom level 9
+                10      // Heatmap radius at zoom level 9 (make it larger if needed)
               ],
               // Transition from heatmap to circle layer by zoom level
               'heatmap-opacity': [
@@ -187,7 +187,7 @@ function App() {
               'Brown', '#62361B',
               'Orange', '#F9461C',
               'Purple', '#522398',
-              '#565A5C' // Default color / Transfer Stations
+              '#FFFFFF' // Default color / Transfer Stations
             ]
           }
         });
@@ -209,7 +209,7 @@ function App() {
               'Brown', '#62361B',
               'Orange', '#F9461C',
               'Purple', '#522398',
-              '#565A5C' // Default color / Transfer Stations
+              '#FFFFFF' // Default color / Transfer Stations
             ]
           },
           'filter': ['==', '$type', 'Point']     
