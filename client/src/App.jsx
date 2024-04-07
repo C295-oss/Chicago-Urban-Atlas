@@ -28,6 +28,55 @@ function App() {
         maxBounds: bounds
       });
 
+      map.current.on('style.load', () => {
+        // Insert the layer beneath any symbol layer.
+        const layers = map.current.getStyle().layers;
+        const labelLayerId = layers.find(
+            (layer) => layer.type === 'symbol' && layer.layout['text-field']
+        ).id;
+
+        // The 'building' layer in the Mapbox Streets
+        // vector tileset contains building height data
+        // from OpenStreetMap.
+        map.current.addLayer(
+            {
+                'id': 'add-3d-buildings',
+                'source': 'composite',
+                'source-layer': 'building',
+                'filter': ['==', 'extrude', 'true'],
+                'type': 'fill-extrusion',
+                'minzoom': 15,
+                'paint': {
+                    'fill-extrusion-color': '#aaa',
+
+                    // Use an 'interpolate' expression to
+                    // add a smooth transition effect to
+                    // the buildings as the user zooms in.
+                    'fill-extrusion-height': [
+                        'interpolate',
+                        ['linear'],
+                        ['zoom'],
+                        15,
+                        0,
+                        15.05,
+                        ['get', 'height']
+                    ],
+                    'fill-extrusion-base': [
+                        'interpolate',
+                        ['linear'],
+                        ['zoom'],
+                        15,
+                        0,
+                        15.05,
+                        ['get', 'min_height']
+                    ],
+                    'fill-extrusion-opacity': 0.6
+                }
+            },
+            labelLayerId
+        );
+      });
+
       map.current.on('load', () => {
         map.current.addSource('cta', {
           type: 'geojson',
@@ -64,7 +113,7 @@ function App() {
               '#565A5C' // Default color / Transfer Stations
             ]
           },
-          'filter': ['==', '$type', 'Point']         
+          'filter': ['==', '$type', 'Point']       
         });
       });
 
@@ -73,6 +122,43 @@ function App() {
         setLat(map.current.getCenter().lat.toFixed(4));
         setZoom(map.current.getZoom().toFixed(2));
       });
+
+      map.current.on('click', 'stations', (e) => {
+        // Get the properties of the clicked feature
+        const properties = e.features[0].properties;
+        
+        // Copy coordinates array.
+        const coordinates = e.features[0].geometry.coordinates.slice();
+        const adaAccessible = properties.ADA === 'ADA Accessible' ? 'Yes' : 'No';
+        const parkAndRide = properties['Park and Ride'] ? 'Yes' : 'No';
+      
+        // Ensure that if the map is zoomed out such that multiple
+        // copies of the feature are visible, the popup appears
+        // over the copy being pointed to.
+        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+          coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+        }
+      
+        new mapboxgl.Popup()
+          .setLngLat(coordinates)
+          .setHTML(
+            `<h1><b>${properties['Station']}</b></h1>
+            <p><strong>Address:</strong> ${properties['Address']}</p>
+            <p><strong>Rail Line:</strong> ${properties['Lines']}</p>
+            <p><strong>ADA Accessible:</strong> ${adaAccessible}</p>
+            <p><strong>Park and Ride:</strong> ${parkAndRide}</p>`
+          )
+          .addTo(map.current);
+      });
+
+      // map.current.on('mouseenter', 'station-layer', () => {
+      //   mapContainer.current.style.cursor = 'pointer';
+      // });
+      
+      // map.current.on('mouseleave', 'station-layer', () => {
+      //   mapContainer.current.style.cursor = '';
+      // });
+
     }
   });
 
