@@ -45,7 +45,7 @@ function App() {
         // from OpenStreetMap.
         map.current.addLayer(
             {
-                'id': 'add-3d-buildings',
+                'id': '3D-buildings',
                 'source': 'composite',
                 'source-layer': 'building',
                 'filter': ['==', 'extrude', 'true'],
@@ -95,7 +95,7 @@ function App() {
           });
           
           map.current.addLayer({
-            id: 'density-heat',
+            id: 'Density',
             type: 'heatmap',
             source: 'density',
             maxzoom: 24, // Adjust as needed
@@ -111,7 +111,7 @@ function App() {
                 ['get', 'mag'],
                 0,
                 0,
-                6,
+                4,
                 0.5 // Adjust this value based on your preference
               ],
               // Increase the heatmap color weight weight by zoom level
@@ -121,9 +121,9 @@ function App() {
                 ['linear'],
                 ['zoom'],
                 0,
-                0.3, // Lower intensity at lower zoom levels
+                0.1, // Lower intensity at lower zoom levels
                 9,
-                0.5    // Full intensity at higher zoom levels
+                0.3    // Full intensity at higher zoom levels
               ],
               // Color ramp for heatmap.  Domain is 0 (low) to 1 (high).
               // Begin color ramp at 0-stop with a 0-transparency color
@@ -136,25 +136,25 @@ function App() {
                 'rgba(255, 255, 255, 0)', // Start with a transparent color
                 0.1,
                 'rgb(255,243,59)',
-                0.3,
+                0.2,
                 'rgb(253,199,12)',
-                0.5,
+                0.4,
                 'rgb(243,144,63)',
-                0.7,
+                0.6,
                 'rgb(237,104,60)',
-                1,
+                0.8,
                 'rgb(233,62,58)'
               ],
               // Adjust the heatmap radius by zoom level
-              'circle-radius': [
+              'heatmap-radius': [
                 'interpolate',
                 ['linear'],
                 ['zoom'],
-                // Define zoom levels and corresponding circle radius values
+                // Define zoom levels and corresponding heatmap radius values
                 0,   // Zoom level 0
-                1,   // Circle radius at zoom level 0
-                5,   // Zoom level 9
-                3    // Circle radius at zoom level 9 (make it larger if needed)
+                0.001,   // Heatmap radius at zoom level 0
+                0.2,   // Zoom level 9
+                50    // Heatmap radius at zoom level 9 (make it larger if needed)
               ],
               // Transition from heatmap to circle layer by zoom level
               'heatmap-opacity': [
@@ -219,7 +219,7 @@ function App() {
           'filter': ['==', '$type', 'Point']     
         });
       });      
-
+      
       map.current.on('move', () => {
         setLng(map.current.getCenter().lng.toFixed(4));
         setLat(map.current.getCenter().lat.toFixed(4));
@@ -257,11 +257,11 @@ function App() {
     }
 
     map.current.on('idle', () => {
-      if (!map.current.getLayer('density-heat') || !map.current.getLayer('add-3d-buildings')) {
+      if (!map.current.getLayer('Density') || !map.current.getLayer('3D-buildings')) {
         return;
       }
   
-      const toggleableLayerIds = ['density-heat', 'add-3d-buildings'];
+      const toggleableLayerIds = ['Density', '3D-buildings'];
         
       // Set up the corresponding toggle button for each layer.
       for (const id of toggleableLayerIds) {
@@ -274,7 +274,7 @@ function App() {
         const link = document.createElement('a');
         link.id = id;
         link.href = '#';
-        link.textContent = id;
+        link.textContent = id.split('-').join(' ');
         link.className = 'active';
     
         // Show or hide layer when the toggle is clicked.
@@ -311,9 +311,8 @@ function App() {
   return (
     <>
       <div className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
-        <a href="javascript:void(0)" className="closebtn" onClick={toggleSidebar}>×</a>
-        <div id="menu">
-        </div>
+        <div id="menu"></div>
+        
       </div>
 
       <button className="openbtn" onClick={toggleSidebar}>☰ Toggle Sidebar</button>
