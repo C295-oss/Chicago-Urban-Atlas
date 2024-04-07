@@ -249,7 +249,7 @@ function App() {
         setZoom(map.current.getZoom().toFixed(2));
       });
 
-      map.current.on('click', 'stations', (e) => {
+      map.current.on('click', 'L Stations', (e) => {
         // Get the properties of the clicked feature
         const properties = e.features[0].properties;
         
