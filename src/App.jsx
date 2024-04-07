@@ -21,8 +21,6 @@ function App() {
     setSideBarOpen(!isSideBarOpen); // Toggle the sidebar state
   }
 
-  
-
   useEffect(() => {
     if (!map.current) {
       map.current = new mapboxgl.Map({
@@ -53,7 +51,7 @@ function App() {
             'type': 'fill-extrusion',
             'minzoom': 15,
             'layout': {
-              // Make the layer visible by default.
+              // Make the layer not visible by default.
               'visibility': 'none'
             },
             'paint': {
@@ -87,95 +85,114 @@ function App() {
       });
 
       map.current.on('load', () => {
-          map.current.addSource('density', {
-            type: 'geojson',
-            data: './src/assets/points_full_100.geojson'
-          });
-          
-          map.current.addLayer({
-            id: 'Density',
-            type: 'heatmap',
-            source: 'density',
-            maxzoom: 24, // Adjust as needed
-            'layout': {
-              // Make the layer visible by default.
-              'visibility': 'none'
-            },
-            paint: {
-              // Increase the heatmap weight based on frequency and property magnitude
-              'heatmap-weight': [
-                'interpolate',
-                ['linear'],
-                ['get', 'mag'],
-                0,
-                0,
-                4,
-                0.5 // Adjust this value based on your preference
-              ],
-              // Increase the heatmap color weight weight by zoom level
-              // heatmap-intensity is a multiplier on top of heatmap-weight
-              'heatmap-intensity': [
-                'interpolate',
-                ['linear'],
-                ['zoom'],
-                0,
-                0.01, // Lower intensity at lower zoom levels
-                9,
-                0.2    // Full intensity at higher zoom levels
-              ],
-              // Color ramp for heatmap.  Domain is 0 (low) to 1 (high).
-              // Begin color ramp at 0-stop with a 0-transparency color
-              // to create a blur-like effect.
-              'heatmap-color': [
-                'interpolate',
-                ['linear'],
-                ['heatmap-density'],
-                0,
-                'rgba(255, 255, 255, 0)', // Start with a transparent color
-                0.1,
-                'rgb(255,243,59)',
-                0.2,
-                'rgb(253,199,12)',
-                0.3,
-                'rgb(243,144,63)',
-                0.4,
-                'rgb(237,104,60)',
-                0.5,
-                'rgb(233,62,58)'
-              ],
-              // Adjust the heatmap radius by zoom level
-              'heatmap-radius': [
-                'interpolate',
-                ['linear'],
-                ['zoom'],
-                // Define zoom levels and corresponding heatmap radius values
-                0,      // Zoom level 0
-                0.1,    // Heatmap radius at zoom level 0
-                0.5,    // Zoom level 9
-                10      // Heatmap radius at zoom level 9 (make it larger if needed)
-              ],
-              // Transition from heatmap to circle layer by zoom level
-              'heatmap-opacity': [
-                'interpolate',
-                ['linear'],
-                ['zoom'],
-                0,
-                0.5, // Lower opacity at lower zoom levels
-                9,
-                1    // Full opacity at higher zoom levels
-              ]
-            }
-          });
-
-        map.current.addSource('cta', {
+        map.current.addSource('density', {
           type: 'geojson',
-          data: './src/assets/CTA_L.geojson', // Update the path
+          data: './src/assets/points_full_100.geojson'
+        });
+        
+        map.current.addLayer({
+          id: 'Population Density',
+          type: 'heatmap',
+          source: 'density',
+          maxzoom: 24, // Adjust as needed
+          'layout': {
+            // Make the layer not visible by default.
+            'visibility': 'none'
+          },
+          paint: {
+            // Increase the heatmap weight based on frequency and property magnitude
+            'heatmap-weight': [
+              'interpolate',
+              ['linear'],
+              ['get', 'mag'],
+              0,
+              0,
+              4,
+              0.5 // Adjust this value based on your preference
+            ],
+            // Increase the heatmap color weight weight by zoom level
+            // heatmap-intensity is a multiplier on top of heatmap-weight
+            'heatmap-intensity': [
+              'interpolate',
+              ['linear'],
+              ['zoom'],
+              0,
+              0.01, // Lower intensity at lower zoom levels
+              9,
+              0.2    // Full intensity at higher zoom levels
+            ],
+            // Color ramp for heatmap.  Domain is 0 (low) to 1 (high).
+            // Begin color ramp at 0-stop with a 0-transparency color
+            // to create a blur-like effect.
+            'heatmap-color': [
+              'interpolate',
+              ['linear'],
+              ['heatmap-density'],
+              0,
+              'rgba(255, 255, 255, 0)', // Start with a transparent color
+              0.1,
+              'rgb(255,243,59)',
+              0.2,
+              'rgb(253,199,12)',
+              0.3,
+              'rgb(243,144,63)',
+              0.4,
+              'rgb(237,104,60)',
+              0.5,
+              'rgb(233,62,58)'
+            ],
+            // Adjust the heatmap radius by zoom level
+            'heatmap-radius': [
+              'interpolate',
+              ['linear'],
+              ['zoom'],
+              // Define zoom levels and corresponding heatmap radius values
+              0,      // Zoom level 0
+              0.1,    // Heatmap radius at zoom level 0
+              0.5,    // Zoom level 9
+              10      // Heatmap radius at zoom level 9 (make it larger if needed)
+            ],
+            // Transition from heatmap to circle layer by zoom level
+            'heatmap-opacity': [
+              'interpolate',
+              ['linear'],
+              ['zoom'],
+              0,
+              0.5, // Lower opacity at lower zoom levels
+              9,
+              1    // Full opacity at higher zoom levels
+            ]
+          }
+        });
+
+        map.current.addSource('cta_buses', {
+          type: 'geojson',
+          data: './src/assets/CTA_bus.geojson',
         });
 
         map.current.addLayer({
-          'id': 'lines',
+          'id': 'Bus Routes',
           'type': 'line',
-          'source': 'cta',
+          'source': 'cta_buses',
+          'paint': {
+            'line-width': 1,
+            'line-color': '#FFFFFF'
+          },
+          'layout': {
+            // Make the layer not visible by default.
+            'visibility': 'none'
+          },
+        });
+
+        map.current.addSource('cta_L', {
+          type: 'geojson',
+          data: './src/assets/CTA_L.geojson',
+        });
+
+        map.current.addLayer({
+          'id': 'L Lines',
+          'type': 'line',
+          'source': 'cta_L',
           'paint': {
             'line-width': 3,
             'line-color': [
@@ -191,13 +208,17 @@ function App() {
               'Purple', '#522398',
               '#FFFFFF' // Default color / Transfer Stations
             ]
+          },
+          'layout': {
+            // Make the layer not visible by default.
+            'visibility': 'visible'
           }
         });
 
         map.current.addLayer({
-          'id': 'stations',
+          'id': 'L Stations',
           'type': 'circle',
-          'source': 'cta',
+          'source': 'cta_L',
           'paint': {
             'circle-radius': 6,
             'circle-color': [
@@ -214,16 +235,12 @@ function App() {
               '#FFFFFF' // Default color / Transfer Stations
             ]
           },
-          'filter': ['==', '$type', 'Point']     
+          'filter': ['==', '$type', 'Point'],
+          'layout': {
+            // Make the layer not visible by default.
+            'visibility': 'visible'
+          }  
         });
-
-        map.loadImage(
-          './src/assets/circe.png',
-          function (error, image) {
-            if (error) throw error;
-            map.addImage('circle-marker', image);
-          }
-        );
       });
       
       map.current.on('move', () => {
@@ -263,11 +280,24 @@ function App() {
     }
 
     map.current.on('idle', () => {
-      if (!map.current.getLayer('Density') || !map.current.getLayer('3D-buildings')) {
+      if ( 
+        !map.current.getLayer('L Stations') ||
+        !map.current.getLayer('L Lines') ||
+        !map.current.getLayer('Bus Routes') ||
+        !map.current.getLayer('Population Density') || 
+        !map.current.getLayer('3D-buildings') || 
+        !map.current.getLayer('Bus Routes')
+      ) {
         return;
       }
   
-      const toggleableLayerIds = ['Density', '3D-buildings'];
+      const toggleableLayerIds = [
+        'L Stations',
+        'L Lines',
+        'Bus Routes',
+        'Population Density', 
+        '3D-buildings'
+      ];
         
       // Set up the corresponding toggle button for each layer.
       for (const id of toggleableLayerIds) {
@@ -320,7 +350,7 @@ function App() {
         <h2><b>Display Options</b></h2>
         <div id="menu"></div>
         
-        <div>
+        {/* <div>
           <p><b>Station Filters</b></p>
 
           <label>
@@ -331,7 +361,7 @@ function App() {
             <input type="checkbox" />
             Park and Ride
           </label>
-        </div>
+        </div> */}
       </div>
 
       <button className="openbtn px-4 py-2" onClick={toggleSidebar}> ☰ Map Settings</button>
