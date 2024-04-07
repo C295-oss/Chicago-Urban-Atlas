@@ -21,9 +21,12 @@ function App() {
   // }
 
   const bounds = [
-    [-87.9401, 41.6445], // Southwest coordinates (adjusted)
-    [-87.5240, 42.0230]  // Northeast coordinates (adjusted)
-  ];
+    [-88.2627, 41.4694], // Southwest coordinates: Near Aurora, extending the bounds westward and slightly southward
+    [-87.5172, 42.1549]  // Northeast coordinates: Near Waukegan, extending the bounds northward and slightly eastward
+];
+
+
+
 
   function toggleSidebar() {
     setSideBarOpen(!isSideBarOpen); // Toggle the sidebar state
