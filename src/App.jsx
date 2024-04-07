@@ -11,14 +11,14 @@ function App() {
   const [lat, setLat] = useState(41.8781);
   const [zoom, setZoom] = useState(12);
   const [isSideBarOpen, setSideBarOpen] = useState(false); // Define sidebarOpen state
-  const [mapStyle, setMapStyle] = useState('mapbox://styles/mapbox/dark-v11');
+  // const [mapStyle, setMapStyle] = useState('mapbox://styles/mapbox/dark-v11');
 
-  function handleStyleChange(newStyle) {
-    setMapStyle(`mapbox://styles/mapbox/${newStyle}-v11`);
-    if (map.current) {
-      map.current.setStyle(`mapbox://styles/mapbox/${newStyle}-v11`);
-    }
-  }
+  // function handleStyleChange(newStyle) {
+  //   setMapStyle(`mapbox://styles/mapbox/${newStyle}-v11`);
+  //   if (map.current) {
+  //     map.current.setStyle(`mapbox://styles/mapbox/${newStyle}-v11`);
+  //   }
+  // }
 
   const bounds = [
     [-87.9401, 41.6445], // Southwest coordinates (adjusted)
@@ -33,10 +33,11 @@ function App() {
     if (!map.current) {
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
-        style: mapStyle,
+        style: 'mapbox://styles/mapbox/dark-v11',
         center: [-87.6298, 41.8781], // Chicago downtown coordinates
         zoom: zoom,
-        maxZoom: 35,
+        maxZoom: 24,
+        minZoom: 0,
         maxBounds: bounds
       });
 
@@ -92,13 +93,13 @@ function App() {
         );
       });
 
-      function handleStyleChange(newStyle) {
-        setMapStyle(`mapbox://styles/mapbox/${newStyle}-v11`);
-        if (map.current) {
-          map.current.setStyle(`mapbox://styles/mapbox/${newStyle}-v11`);
-          map.current.once('styledata', addCustomLayers);
-        }
-      }
+      // function handleStyleChange(newStyle) {
+      //   setMapStyle(`mapbox://styles/mapbox/${newStyle}-v11`);
+      //   if (map.current) {
+      //     map.current.setStyle(`mapbox://styles/mapbox/${newStyle}-v11`);
+      //     map.current.once('styledata', addCustomLayers);
+      //   }
+      // }
 
       map.current.on('load', () => {
         map.current.addSource('density', {
@@ -388,7 +389,7 @@ function App() {
         <label htmlFor="dark-v11">Dark</label>
       </div> */}
 
-      <button className="openbtn px-4 py-2" onClick={toggleSidebar}> ☰ Map Settings</button>
+      <button className="openbtn px-4 py-2 w-60 text-center" onClick={toggleSidebar}> ☰ Map Settings</button>
       <div className='w-screen h-screen' ref={mapContainer} id="main" />
     </>
   );
