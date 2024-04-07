@@ -11,11 +11,16 @@ function App() {
   const [lng, setLng] = useState(-87.6298);
   const [lat, setLat] = useState(41.8781);
   const [zoom, setZoom] = useState(13);
+  const [sidebarOpen, setSidebarOpen] = useState(false); // Define sidebarOpen state
 
   const bounds = [
     [-87.9401, 41.6445], // Southwest coordinates (adjusted)
     [-87.5240, 42.0230]  // Northeast coordinates (adjusted)
   ];
+
+  function toggleSidebar() {
+    setSidebarOpen(!sidebarOpen); // Toggle the sidebar state
+  }
 
   useEffect(() => {
     if (!map.current) {
@@ -46,6 +51,10 @@ function App() {
                 'filter': ['==', 'extrude', 'true'],
                 'type': 'fill-extrusion',
                 'minzoom': 15,
+                'layout': {
+                  // Make the layer visible by default.
+                  'visibility': 'none'
+                },
                 'paint': {
                     'fill-extrusion-color': '#aaa',
 
@@ -77,7 +86,89 @@ function App() {
         );
       });
 
+
       map.current.on('load', () => {
+
+          map.current.addSource('density', {
+            type: 'geojson',
+            data: './src/assets/points_full_100.geojson'
+          });
+          
+          map.current.addLayer({
+            id: 'density-heat',
+            type: 'heatmap',
+            source: 'density',
+            maxzoom: 24, // Adjust as needed
+            'layout': {
+              // Make the layer visible by default.
+              'visibility': 'none'
+            },
+            paint: {
+              // Increase the heatmap weight based on frequency and property magnitude
+              'heatmap-weight': [
+                'interpolate',
+                ['linear'],
+                ['get', 'mag'],
+                0,
+                0,
+                6,
+                0.5 // Adjust this value based on your preference
+              ],
+              // Increase the heatmap color weight weight by zoom level
+              // heatmap-intensity is a multiplier on top of heatmap-weight
+              'heatmap-intensity': [
+                'interpolate',
+                ['linear'],
+                ['zoom'],
+                0,
+                0.3, // Lower intensity at lower zoom levels
+                9,
+                0.5    // Full intensity at higher zoom levels
+              ],
+              // Color ramp for heatmap.  Domain is 0 (low) to 1 (high).
+              // Begin color ramp at 0-stop with a 0-transparency color
+              // to create a blur-like effect.
+              'heatmap-color': [
+                'interpolate',
+                ['linear'],
+                ['heatmap-density'],
+                0,
+                'rgba(255, 255, 255, 0)', // Start with a transparent color
+                0.1,
+                'rgb(255,243,59)',
+                0.3,
+                'rgb(253,199,12)',
+                0.5,
+                'rgb(243,144,63)',
+                0.7,
+                'rgb(237,104,60)',
+                1,
+                'rgb(233,62,58)'
+              ],
+              // Adjust the heatmap radius by zoom level
+              'circle-radius': [
+                'interpolate',
+                ['linear'],
+                ['zoom'],
+                // Define zoom levels and corresponding circle radius values
+                0,   // Zoom level 0
+                1,   // Circle radius at zoom level 0
+                5,   // Zoom level 9
+                3    // Circle radius at zoom level 9 (make it larger if needed)
+              ],
+              // Transition from heatmap to circle layer by zoom level
+              'heatmap-opacity': [
+                'interpolate',
+                ['linear'],
+                ['zoom'],
+                0,
+                0.5, // Lower opacity at lower zoom levels
+                9,
+                1    // Full opacity at higher zoom levels
+              ]
+            }
+          });
+
         map.current.addSource('cta', {
           type: 'geojson',
           data: './src/assets/CTA_L.geojson', // Update the path
@@ -89,9 +180,21 @@ function App() {
           'source': 'cta',
           'paint': {
             'line-width': 3,
-            'line-color': '#FFFFFF'
-          },
-        })
+            'line-color': [
+              'match',
+              ['get', 'Lines'],
+              'Red', '#C60C30',
+              'Green', '#009B3A',
+              'Yellow', '#F9E300',
+              'Blue', '#00A1DE',
+              'Pink', '#E27EA6',
+              'Brown', '#62361B',
+              'Orange', '#F9461C',
+              'Purple', '#522398',
+              '#565A5C' // Default color / Transfer Stations
+            ]
+          }
+        });
 
         map.current.addLayer({
           'id': 'stations',
@@ -113,9 +216,9 @@ function App() {
               '#565A5C' // Default color / Transfer Stations
             ]
           },
-          'filter': ['==', '$type', 'Point']       
+          'filter': ['==', '$type', 'Point']     
         });
-      });
+      });      
 
       map.current.on('move', () => {
         setLng(map.current.getCenter().lng.toFixed(4));
@@ -131,6 +234,7 @@ function App() {
         const coordinates = e.features[0].geometry.coordinates.slice();
         const adaAccessible = properties.ADA === 'ADA Accessible' ? 'Yes' : 'No';
         const parkAndRide = properties['Park and Ride'] ? 'Yes' : 'No';
+        const spacedLineColors = properties['Lines'].split(',').join(', ');
       
         // Ensure that if the map is zoomed out such that multiple
         // copies of the feature are visible, the popup appears
@@ -144,26 +248,77 @@ function App() {
           .setHTML(
             `<h1><b>${properties['Station']}</b></h1>
             <p><strong>Address:</strong> ${properties['Address']}</p>
-            <p><strong>Rail Line:</strong> ${properties['Lines']}</p>
+            <p><strong>Lines:</strong> ${spacedLineColors}</p>
             <p><strong>ADA Accessible:</strong> ${adaAccessible}</p>
             <p><strong>Park and Ride:</strong> ${parkAndRide}</p>`
           )
           .addTo(map.current);
       });
-
-      // map.current.on('mouseenter', 'station-layer', () => {
-      //   mapContainer.current.style.cursor = 'pointer';
-      // });
-      
-      // map.current.on('mouseleave', 'station-layer', () => {
-      //   mapContainer.current.style.cursor = '';
-      // });
-
     }
+
+    map.current.on('idle', () => {
+      if (!map.current.getLayer('density-heat') || !map.current.getLayer('add-3d-buildings')) {
+        return;
+      }
+  
+      const toggleableLayerIds = ['density-heat', 'add-3d-buildings'];
+        
+      // Set up the corresponding toggle button for each layer.
+      for (const id of toggleableLayerIds) {
+        // Skip layers that already have a button set up.
+        if (document.getElementById(id)) {
+          continue;
+        }
+    
+        // Create a link.
+        const link = document.createElement('a');
+        link.id = id;
+        link.href = '#';
+        link.textContent = id;
+        link.className = 'active';
+    
+        // Show or hide layer when the toggle is clicked.
+        link.onclick = function (e) {
+          const clickedLayer = this.textContent;
+          e.preventDefault();
+          e.stopPropagation();
+    
+        const visibility = map.current.getLayoutProperty(
+          clickedLayer,
+          'visibility'
+        );
+    
+        // Toggle layer visibility by changing the layout object's visibility property.
+        if (visibility === 'visible') {
+          map.current.setLayoutProperty(clickedLayer, 'visibility', 'none');
+          this.className = '';
+        }  else {
+          this.className = 'active';
+          map.current.setLayoutProperty(
+            clickedLayer,
+            'visibility',
+            'visible'
+          );
+        }
+      };
+        const layers = document.getElementById('menu');
+        layers.appendChild(link);
+      }
+    });
+    
   });
 
   return (
-    <div className='w-screen h-screen' ref={mapContainer} />
+    <>
+      <div className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
+        <a href="javascript:void(0)" className="closebtn" onClick={toggleSidebar}>×</a>
+        <div id="menu">
+        </div>
+      </div>
+
+      <button className="openbtn" onClick={toggleSidebar}>☰ Toggle Sidebar</button>
+      <div className='w-screen h-screen' ref={mapContainer} id="main" />
+    </>
   );
 }
 export default App;
