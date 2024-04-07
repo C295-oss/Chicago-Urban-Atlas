@@ -1,8 +1,12 @@
 ## About
-Blah blah
+A one-stop to gain knowledge and information on Chicago's transit system and the city in general, to either assist or how how urban planning has affected the city.
 
 ## Tools used
-Blah blah
+React.js
+Tailwind.css
+Vite
+Mapbox
 
 ## Contributors
+Thomas Bitsky
 Kaito Sekiya
