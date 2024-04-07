@@ -102,6 +102,10 @@ with open("out/CTA_L.geojson", "w") as geojson_f:
     geojson_f.write(geojson)
 
 
+# Comment why not こんにちわ
+exit()
+
+
 #
 # Load and process CTA L's stations daily ridership data
 #
@@ -123,44 +127,15 @@ ridership_df["ID"] -= 40000
 ridership_df["Date"] = ridership_df["Date"].str.replace("/", "-")
 
 
-# Save JSON string to a file
+
 with open("out/ridership.json", 'w') as f:
     f.write(ridership_df.to_json(orient="records", indent=4))
 
+
+#
+# Improve a look of density map
+#
 gdf = gpd.read_file(
     "../client/src/assets/points_full_100.geojson"
 )
 gdf.to_file("../client/src/assets/points_full_100.geojson", driver="GeoJSON")
-
-exit()
-
-with open("out/ridership.json", "w") as f_json:
-    f_json.write(
-        json.dumps(
-            ridership_df.head(n=100).to_dict(orient="index"), 
-            indent=4
-        )
-    )
-exit()
-
-with open("out/ridership.json", "w") as f_json:
-    f_json.write(
-        json.dumps(
-            ridership_df.groupby("ID").apply(
-                lambda x: x.set_index("Date")["Rides"].to_dict()
-            ).to_dict(), 
-            indent=4
-        )
-    )
-
-
-
-
-# with open("out/ridership.json", "r") as json_f:
-#     data = json.load(json_f)
-
-#     with open("dump.txt", "w") as f:
-#         for id in data:
-#             if id == "900":
-#                 exit()
-#             f.write(json.dumps(f"{id}: {data[id]}", indent=4) + ",\n")
