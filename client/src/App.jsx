@@ -29,56 +29,42 @@ function App() {
       });
 
       map.current.on('load', () => {
-        map.current.addSource('stations', {
+        map.current.addSource('cta', {
           type: 'geojson',
-          data: './src/assets/CTA_L_Stations.geojson', // Update the path
+          data: './src/assets/CTA_L.geojson', // Update the path
         });
 
         map.current.addLayer({
-          'id': 'line',
-          'type': 'fill',
-          'source': {
-            type: 'geojson',
-            data: './src/assets/CTA_L_Lines.geojson', // Update the path
-          },
+          'id': 'lines',
+          'type': 'line',
+          'source': 'cta',
           'paint': {
-            'fill-color': [
-              'match',
-              ['get', 'Lines'], // Property to match
-              'Red', '#c60c30',
-              'Green', '#009b3a',
-              'Yellow', '#f9e300',
-              'Blue', '#00a1de',
-              'Pink', '#e27ea6',
-              'Brown', '#62361b',
-              'Orange', '#f9461c',
-              'Purple', '#522398',
-              '#565a5c' // Default color
-            ],
-            'fill-opacity': 0.5 // Adjust opacity as needed
-          }           
-      });
+            'line-width': 3,
+            'line-color': '#FFFFFF'
+          },
+        })
 
         map.current.addLayer({
-            'id': 'station-layer',
-            'type': 'circle',
-            'source': 'stations',
-            'paint': {
-              'circle-radius': 6,
-              'circle-color': [
-                'match',
-                ['get', 'Lines'], // Property to match
-                'Red', '#c60c30',
-                'Green', '#009b3a',
-                'Yellow', '#f9e300',
-                'Blue', '#00a1de',
-                'Pink', '#e27ea6',
-                'Brown', '#62361b',
-                'Orange', '#f9461c',
-                'Purple', '#522398',
-                '#565a5c' // Default color / Transfer Stations
-              ]
-            }            
+          'id': 'stations',
+          'type': 'circle',
+          'source': 'cta',
+          'paint': {
+            'circle-radius': 6,
+            'circle-color': [
+              'match',
+              ['get', 'Lines'],
+              'Red', '#C60C30',
+              'Green', '#009B3A',
+              'Yellow', '#F9E300',
+              'Blue', '#00A1DE',
+              'Pink', '#E27EA6',
+              'Brown', '#62361B',
+              'Orange', '#F9461C',
+              'Purple', '#522398',
+              '#565A5C' // Default color / Transfer Stations
+            ]
+          },
+          'filter': ['==', '$type', 'Point']         
         });
       });
 
