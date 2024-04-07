@@ -31,7 +31,7 @@ function App() {
       map.current.on('load', () => {
         map.current.addSource('stations', {
           type: 'geojson',
-          data: './src/CTA_RailStations.geojson', // Update the path
+          data: './src/assets/CTA_L_Stations.geojson', // Update the path
         });
 
         map.current.addLayer({
@@ -39,25 +39,20 @@ function App() {
           'type': 'fill',
           'source': {
             type: 'geojson',
-            data: './src/CTA_RailLines.geojson', // Update the path
+            data: './src/assets/CTA_L_Lines.geojson', // Update the path
           },
           'paint': {
             'fill-color': [
               'match',
-              ['get', 'Rail Line'], // Property to match
-              'Red Line', '#c60c30',
-              'Green Line', '#009b3a',
-              'Green Line (Lake)', '#009b3a',
-              'Green Line (Englewood)', '#009b3a',
-              'Yellow Line', '#f9e300',
-              'Blue Line', '#00a1de',
-              'Blue Line (O\'Hare)', '#00a1de',
-              'Blue Line (Congress)', '#00a1de',
+              ['get', 'Lines'], // Property to match
+              'Red', '#c60c30',
+              'Green', '#009b3a',
+              'Yellow', '#f9e300',
+              'Blue', '#00a1de',
               'Pink', '#e27ea6',
-              'Brown Line', '#62361b',
-              'Orange Line', '#f9461c',
-              'Purple (Express)', '#522398',
-              'Purple Line, Evanston Express', '#522398',
+              'Brown', '#62361b',
+              'Orange', '#f9461c',
+              'Purple', '#522398',
               '#565a5c' // Default color
             ],
             'fill-opacity': 0.5 // Adjust opacity as needed
@@ -72,20 +67,15 @@ function App() {
               'circle-radius': 6,
               'circle-color': [
                 'match',
-                ['get', 'Rail Line'], // Property to match
-                'Red Line', '#c60c30',
-                'Green Line', '#009b3a',
-                'Green Line (Lake)', '#009b3a',
-                'Green Line (Englewood)', '#009b3a',
-                'Yellow Line', '#f9e300',
-                'Blue Line', '#00a1de',
-                'Blue Line (O\'Hare)', '#00a1de',
-                'Blue Line (Congress)', '#00a1de',
+                ['get', 'Lines'], // Property to match
+                'Red', '#c60c30',
+                'Green', '#009b3a',
+                'Yellow', '#f9e300',
+                'Blue', '#00a1de',
                 'Pink', '#e27ea6',
-                'Brown Line', '#62361b',
-                'Orange Line', '#f9461c',
-                'Purple (Express)', '#522398',
-                'Purple Line, Evanston Express', '#522398',
+                'Brown', '#62361b',
+                'Orange', '#f9461c',
+                'Purple', '#522398',
                 '#565a5c' // Default color / Transfer Stations
               ]
             }            
