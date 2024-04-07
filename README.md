@@ -6,7 +6,8 @@ React.js
 Tailwind.css
 Vite
 Mapbox
+GeoJSON
 
 ## Contributors
-Thomas Bitsky
-Kaito Sekiya
+Kaito Sekiya //
+Colin Grasley
