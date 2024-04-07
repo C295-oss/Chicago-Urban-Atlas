@@ -6,7 +6,7 @@ import geopandas as gpd
 
 
 #
-#
+# Read
 #
 stations_gdf = gpd.read_file(
     "src/CTA_L_Stations.geojson"
@@ -36,7 +36,6 @@ stations_gdf = stations_gdf[["ID", "ADA", "Address", "P&D", "Lines", "Name", "ge
 stations_gdf = stations_gdf.rename(columns={"Name": "Station"}) # idk why but renaming name at beginning doesn't work
 
 stations_features = json.loads(stations_gdf.to_json())["features"]
-# stations_gdf.to_file("../client/src/assets/CTA_L_Stations.geojson", driver="GeoJSON")
 
 
 #
@@ -45,10 +44,19 @@ stations_features = json.loads(stations_gdf.to_json())["features"]
 lines_gdf = gpd.read_file(
     "src/CTA_L_Lines.geojson"
 ).filter(
-    items=["geometry"]
+    items=["Name", "geometry"]
+).rename(
+    columns={"Name": "Lines"}
 )
 
-lines_gdf["color"] = "#FFFFFF"
+lines_gdf["Lines"] = lines_gdf["Lines"].str.replace(pat="\(.*?\)", repl="", regex=True)
+
+for pat in ["Line", " "]:
+    lines_gdf["Lines"] = lines_gdf["Lines"].str.replace(pat, "")
+
+lines_gdf["Lines"] = lines_gdf["Lines"].apply(
+    lambda lines: ",".join(sorted(lines.split(",")))
+)
 
 lines_features = json.loads(lines_gdf.to_json())["features"]
 
@@ -65,7 +73,9 @@ cta_gdf.to_file("../client/src/assets/CTA_L.geojson", driver="GeoJSON")
 
 with open("../client/src/assets/CTA_L.geojson", "r") as geojson_f:
     geojson = geojson_f.read().replace(
-        '"properties": { "ID": null, "ADA": null, "Address": null, "P&D": null, "Lines": null, "Station": null, "color": "#FFFFFF" }, ', ""
+        '"ID": null, "ADA": null, "Address": null, "P&D": null,', ""
+    ).replace(
+        ', "Station": null', ""
     )
 
 with open("../client/src/assets/CTA_L.geojson", "w") as geojson_f:
