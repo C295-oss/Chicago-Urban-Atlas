@@ -11,6 +11,14 @@ function App() {
   const [lat, setLat] = useState(41.8781);
   const [zoom, setZoom] = useState(12);
   const [isSideBarOpen, setSideBarOpen] = useState(false); // Define sidebarOpen state
+  const [mapStyle, setMapStyle] = useState('mapbox://styles/mapbox/dark-v11');
+
+  function handleStyleChange(newStyle) {
+    setMapStyle(`mapbox://styles/mapbox/${newStyle}-v11`);
+    if (map.current) {
+      map.current.setStyle(`mapbox://styles/mapbox/${newStyle}-v11`);
+    }
+  }
 
   const bounds = [
     [-87.9401, 41.6445], // Southwest coordinates (adjusted)
@@ -25,7 +33,7 @@ function App() {
     if (!map.current) {
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
-        style: 'mapbox://styles/mapbox/dark-v11',
+        style: mapStyle,
         center: [-87.6298, 41.8781], // Chicago downtown coordinates
         zoom: zoom,
         maxZoom: 35,
@@ -83,6 +91,14 @@ function App() {
           labelLayerId
         );
       });
+
+      function handleStyleChange(newStyle) {
+        setMapStyle(`mapbox://styles/mapbox/${newStyle}-v11`);
+        if (map.current) {
+          map.current.setStyle(`mapbox://styles/mapbox/${newStyle}-v11`);
+          map.current.once('styledata', addCustomLayers);
+        }
+      }
 
       map.current.on('load', () => {
         map.current.addSource('density', {
@@ -346,23 +362,31 @@ function App() {
   return (
     <>
       <div className={`sidebar ${isSideBarOpen ? 'open' : ''}`}>
-        
         <h2><b>Display Options</b></h2>
         <div id="menu"></div>
-        
-        {/* <div>
-          <p><b>Station Filters</b></p>
-
-          <label>
-            <input type="checkbox" />
-            ADA Accessible
-          </label>
-          <label>
-            <input type="checkbox" />
-            Park and Ride
-          </label>
-        </div> */}
       </div>
+
+      {/* <div id="LightDark">
+        <input
+          id="light-v11"
+          type="radio"
+          name="rtoggle"
+          value="light"
+          onChange={() => handleStyleChange('light')}
+          checked={mapStyle === 'mapbox://styles/mapbox/light-v11'}
+        />
+        <label htmlFor="light-v11">Light</label>
+        
+        <input
+          id="dark-v11"
+          type="radio"
+          name="rtoggle"
+          value="dark"
+          onChange={() => handleStyleChange('dark')}
+          checked={mapStyle === 'mapbox://styles/mapbox/dark-v11'}
+        />
+        <label htmlFor="dark-v11">Dark</label>
+      </div> */}
 
       <button className="openbtn px-4 py-2" onClick={toggleSidebar}> ☰ Map Settings</button>
       <div className='w-screen h-screen' ref={mapContainer} id="main" />

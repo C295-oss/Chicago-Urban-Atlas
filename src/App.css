@@ -106,3 +106,37 @@ input[type="checkbox"] {
   color: #f1f1f1; 
 }
 
+#LightDark {
+  position: fixed;
+  top: 10px; /* Adjust as needed for top spacing */
+  right: 10px; /* Adjust as needed for right spacing */
+  z-index: 1000; /* Ensure it's above other content */
+  background-color: rgba(17, 17, 17, 0.8); /* Semi-transparent dark background */
+  padding: 5px 20px; /* Minimal padding around the content */
+  border-radius: 5px; /* Optional: Adds rounded corners */
+  display: flex; /* Aligns the radio buttons and labels in a row */
+  align-items: center; /* Center-aligns items vertically */
+  color: #fff;
+}
+
+#LightDark input[type="radio"],
+#LightDark label {
+  cursor: pointer;
+  margin: 0 5px; /* Reduced margin for a compact layout */
+  font-size: 12px; /* Smaller text for a more subtle toggle */
+}
+
+#LightDark label {
+  color: #fff; /* Ensures labels are light and visible against the dark background */
+}
+
+/* Optional: Hide the radio button's default appearance */
+#LightDark input[type="radio"] {
+  opacity: 0; /* Hide the radio button itself */
+  position: absolute; /* Take it out of the document flow */
+  width: 0; /* Eliminate the space it takes up */
+}
+
+#LightDark input[type="radio"]:checked + label {
+  font-weight: bold; /* Highlight the selected mode */
+}
