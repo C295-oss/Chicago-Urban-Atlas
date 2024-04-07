@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import './App.css';
 
@@ -9,8 +9,8 @@ function App() {
   const map = useRef(null);
   const [lng, setLng] = useState(-87.6298);
   const [lat, setLat] = useState(41.8781);
-  const [zoom, setZoom] = useState(13);
-  const [sidebarOpen, setSidebarOpen] = useState(false); // Define sidebarOpen state
+  const [zoom, setZoom] = useState(12);
+  const [isSideBarOpen, setSideBarOpen] = useState(false); // Define sidebarOpen state
 
   const bounds = [
     [-87.9401, 41.6445], // Southwest coordinates (adjusted)
@@ -18,8 +18,10 @@ function App() {
   ];
 
   function toggleSidebar() {
-    setSidebarOpen(!sidebarOpen); // Toggle the sidebar state
+    setSideBarOpen(!isSideBarOpen); // Toggle the sidebar state
   }
+
+  
 
   useEffect(() => {
     if (!map.current) {
@@ -28,7 +30,7 @@ function App() {
         style: 'mapbox://styles/mapbox/dark-v11',
         center: [-87.6298, 41.8781], // Chicago downtown coordinates
         zoom: zoom,
-        maxZoom: 28,
+        maxZoom: 35,
         maxBounds: bounds
       });
 
@@ -214,7 +216,15 @@ function App() {
           },
           'filter': ['==', '$type', 'Point']     
         });
-      });      
+
+        map.loadImage(
+          './src/assets/circe.png',
+          function (error, image) {
+            if (error) throw error;
+            map.addImage('circle-marker', image);
+          }
+        );
+      });
       
       map.current.on('move', () => {
         setLng(map.current.getCenter().lng.toFixed(4));
@@ -305,16 +315,12 @@ function App() {
 
   return (
     <>
-      <div className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
+      <div className={`sidebar ${isSideBarOpen ? 'open' : ''}`}>
         
         <p><b>Display Options</b></p>
         <div id="menu"></div>
         
         <div>
-
-          <br/>
-          <br/>
-
           <p><b>Station Filters</b></p>
 
           <label>
@@ -326,10 +332,9 @@ function App() {
             Park and Ride
           </label>
         </div>
-      
       </div>
 
-      <button className="openbtn" onClick={toggleSidebar}>☰ Toggle Sidebar</button>
+      <button className="openbtn px-4 py-2" onClick={toggleSidebar}> ☰ Map Settings</button>
       <div className='w-screen h-screen' ref={mapContainer} id="main" />
     </>
   );
